@@ -26,74 +26,88 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+# Order & Payment Microservices
 
-```bash
-$ npm install
+This project consists of two microservices: `order-service` and `payment-service`, built using **NestJS** and **Kafka** for event-driven communication. The services are containerized with **Docker** and use Kafka as the message broker.
+
+## 📌 Features
+- Order Service: Creates and emits orders to Kafka.
+- Payment Service: Listens for order events and processes payments.
+- Kafka-based asynchronous communication.
+- Docker support for easy deployment.
+
+## 🚀 Getting Started
+
+### 1️⃣ **Prerequisites**
+Ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (>= 16.x)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+### 2️⃣ **Clone the Repository**
+```sh
+git clone https://github.com/umairdev1/nestjs-product-order-system-kafka.git
+cd nestjs-product-order-system-kafka
 ```
 
-## Compile and run the project
+### 3️⃣ **Start Services with Docker**
+Run the following command to start Kafka, Zookeeper, and the microservices:
+```sh
+docker-compose up -d
+```
+This will start the Kafka broker, Zookeeper, and both microservices.
 
-```bash
-# development
-$ npm run start
+### 4️⃣ **Running Services Locally** (Without Docker)
+You can start each service manually:
+```sh
+# Start Order Service
+npm run start:order
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Start Payment Service
+npm run start:payment
+```
+Or start both at once:
+```sh
+npm run start:all
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+### 5️⃣ **Testing the Services**
+#### ✅ Create an Order (via Order Service)
+Send a POST request using `cURL` or Postman:
+```sh
+curl -X POST http://localhost:3001/orders -H "Content-Type: application/json" -d '{"orderId": "12345"}'
+```
+Expected output in the Payment Service logs:
+```sh
+Received Order: 12345
+Payment for Order 12345 completed successfully.
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
+### 6️⃣ **Checking Kafka Messages**
+To verify messages sent to Kafka, run:
+```sh
+docker exec -it kafka kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic orders --from-beginning
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 🛠 Environment Variables
+Create a `.env` file in the root directory and define:
+```env
+KAFKA_BROKER=localhost:9092
+ORDER_SERVICE_PORT=3001
+PAYMENT_SERVICE_PORT=3002
+```
+```
 
-## Resources
+## 🐛 Troubleshooting
+**1. Kafka Connection Error**
+- Ensure Kafka and Zookeeper are running:
+```sh
+docker-compose ps
+```
+- Restart Kafka if needed:
+```sh
+docker-compose restart kafka
+```
 
-Check out a few resources that may come in handy when working with NestJS:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
